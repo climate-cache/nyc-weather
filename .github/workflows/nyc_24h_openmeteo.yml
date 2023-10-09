@@ -83,6 +83,6 @@ jobs:
           git config user.email 'theclimatecache@gmail.com'
           git add .
           git commit -m "${{ steps.metagen.outputs.timestr }}"
-          git push origin HEAD:main
+          git push https://github.com/climate-cache/nyc-weather.git HEAD:main
         env:
           GIT_SSH_KEY: ${{ secrets.PAT_TOKEN }}
