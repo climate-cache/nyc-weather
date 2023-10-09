@@ -1,4 +1,4 @@
-name: NYC 14-Day ( Hourly )
+name: NYC 24h Weather ( Daily )
 
 on:
   schedule:
@@ -61,28 +61,26 @@ jobs:
 
       - name: Split JSON
         run: |
-          python -c "import os
-          import json
-      
-          repo_directory = os.environ['GITHUB_WORKSPACE']
-          with open(repo_directory + '/$YEAR/$MONTH/' + '$FILENAME.json') as f:
-              data = json.load(f)
-              for key in list(data['hourly'].keys()):
-                  data['hourly'][key] = data['hourly'][key][:24]
-          with open(repo_directory + '/$YEAR/$MONTH/' + '$FILENAME.json', 'w') as f:
-              json.dump(data, f, indent=4, ensure_ascii=False)
+          python -c "
+              repo_directory = os.environ['GITHUB_WORKSPACE']
+              with open(repo_directory + '/$YEAR/$MONTH/' + '$FILENAME.json') as f:
+                  data = json.load(f)
+                  for key in list(data['hourly'].keys()):
+                      data['hourly'][key] = data['hourly'][key][:24]
+              with open(repo_directory + '/$YEAR/$MONTH/' + '$FILENAME.json', 'w') as f:
+                  json.dump(data, f, indent=4, ensure_ascii=False)
           "
         env:
           YEAR: ${{ steps.metagen.outputs.year }}
           MONTH: ${{ steps.metagen.outputs.month }}
           FILENAME: ${{ steps.metagen.outputs.fname }}
-        
+
       - name: Commit Changes
         run: |
           git config user.name 'Climate-Cache'
           git config user.email 'theclimatecache@gmail.com'
           git add .
           git commit -m "${{ steps.metagen.outputs.timestr }}"
-          git push https://github.com/climate-cache/nyc-weather.git HEAD:main
+          git push origin HEAD:main
         env:
           GIT_SSH_KEY: ${{ secrets.PAT_TOKEN }}
