@@ -61,14 +61,16 @@ jobs:
 
       - name: Split JSON
         run: |
-          python -c "
-              repo_directory = os.environ['GITHUB_WORKSPACE']
-              with open(repo_directory + '/$YEAR/$MONTH/' + '$FILENAME.json') as f:
-                  data = json.load(f)
-                  for key in list(data['hourly'].keys()):
-                      data['hourly'][key] = data['hourly'][key][:24]
-              with open(repo_directory + '/$YEAR/$MONTH/' + '$FILENAME.json', 'w') as f:
-                  json.dump(data, f, indent=4, ensure_ascii=False)
+          python -c "import os
+          import json
+      
+          repo_directory = os.environ['GITHUB_WORKSPACE']
+          with open(repo_directory + '/$YEAR/$MONTH/' + '$FILENAME.json') as f:
+              data = json.load(f)
+              for key in list(data['hourly'].keys()):
+                  data['hourly'][key] = data['hourly'][key][:24]
+          with open(repo_directory + '/$YEAR/$MONTH/' + '$FILENAME.json', 'w') as f:
+              json.dump(data, f, indent=4, ensure_ascii=False)
           "
         env:
           YEAR: ${{ steps.metagen.outputs.year }}
